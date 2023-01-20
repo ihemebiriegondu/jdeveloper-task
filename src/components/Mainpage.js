@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import '../app.css'
 
 const Mainpage = () => {
 
@@ -40,12 +41,12 @@ const Mainpage = () => {
     const onDrop = (e, cate) => {
         //console.log("dropped")
         e.preventDefault();
-        
+
         //console.log(cate)
         let userId = e.dataTransfer.getData('text')
 
         //console.log(userId)
-        
+
         let categories = customerInfo.filter((userCategory) => {
             if (userCategory.id === userId) {
                 userCategory.category = cate;
@@ -58,33 +59,101 @@ const Mainpage = () => {
     }
 
     return (
-        <div>
-            <div>
-                <div className='unplanned-list-div' style={{background: 'blue'}} onDrop={(e) => onDrop(e, "unplanned")}>
-                    <h4>Customers list</h4>
+        <div className='mainPage'>
+            <div className='d-flex justify-content-between mainpagesubdiv py-5 px-4'>
+                <div className='unplanned-list-div'>
+                    <h4 className='ps-5 mb-3'>Customers list</h4>
+                    <table onDrop={(e) => onDrop(e, "unplanned")}>
+                        <thead>
+                            <tr>
+                                <th className='px-4'>Customers Name</th>
+                                <th className='px-4'>Customers ID</th>
+                                <th className='px-4'>Pick Up location</th>
+                                <th className='px-4'>Drop off Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                customerCategories.unplanned.map((category) =>
+                                    <tr key={category.id} onDragStart={(e) => onDragStart(e, category.id)} onDragOver={(e) => onDragOver(e)} onDrop={(e) => onDrop(e, "unplanned")} draggable='true'>
+                                        <td className='px-4'>{category.name}</td>
+                                        <td className='px-4'>{category.id}</td>
+                                    </tr>
+                                )
+                            }
+                        </tbody>
+                    </table>
                     <div>
-                        {
-                            customerCategories.unplanned.map((category) =>
-                                <div key={category.id} onDragStart={(e) => onDragStart(e, category.id)} onDragOver={(e) => onDragOver(e)} onDrop={(e) => onDrop(e, "unplanned")} className='draggable' draggable='true'>
-                                    <h6>{category.name}</h6>
-                                </div>
-                            )
-                        }
+
 
                     </div>
                 </div>
 
 
-                <div className='planned-list-div' style={{background: 'yellow', padding:'2rem 0'}} onDragOver={(e) => onDragOver(e)} onDrop={(e) => onDrop(e, "planned")} droppable='true'>
-                    <h4>Delivery datails</h4>
+                <div className='planned-list-div'>
+                    <h4 className='text-center mb-4'>Delivery planner</h4>
                     <div>
+
                         {
                             customerCategories.planned.map((category) =>
-                                <div key={category.id}>
-                                    <h6>{category.name}</h6>
+                                <div className='planned-item py-3 px-2 mb-3' onDragOver={(e) => onDragOver(e)} onDrop={(e) => onDrop(e, "planned")} droppable='true'>
+                                    <div className='d-flex justify-content-between mb-3'>
+                                        <h6 className='mb-0'>Slot 1</h6>
+                                        <p className='mb-0'>12/2/2023</p>
+                                    </div>
+                                    <div key={category.id}>
+                                        <h6>{category.name}</h6>
+                                    </div>
                                 </div>
                             )
                         }
+                        <div className='planned-item py-3 px-2 mb-3'>
+                            <div className='d-flex justify-content-between mb-3'>
+                                <h6 className='mb-0'>Slot 2</h6>
+                                <p className='mb-0'>12/2/2023</p>
+                            </div>
+                            
+                        </div>
+
+                        <div className='planned-item py-3 px-2 mb-3'>
+                            <div className='d-flex justify-content-between mb-3'>
+                                <h6 className='mb-0'>Slot 3</h6>
+                                <p className='mb-0'>12/2/2023</p>
+                            </div>
+                            
+                        </div>
+
+                        <div className='planned-item py-3 px-2 mb-3'>
+                            <div className='d-flex justify-content-between mb-3'>
+                                <h6 className='mb-0'>Slot 4</h6>
+                                <p className='mb-0'>12/2/2023</p>
+                            </div>
+                            
+                        </div>
+
+                        <div className='planned-item py-3 px-2 mb-3'>
+                            <div className='d-flex justify-content-between mb-3'>
+                                <h6 className='mb-0'>Slot 5</h6>
+                                <p className='mb-0'>12/2/2023</p>
+                            </div>
+                            
+                        </div>
+
+                        <div className='planned-item py-3 px-2 mb-3'>
+                            <div className='d-flex justify-content-between mb-3'>
+                                <h6 className='mb-0'>Slot 6</h6>
+                                <p className='mb-0'>12/2/2023</p>
+                            </div>
+                            
+                        </div>
+
+                        <div className='planned-item py-3 px-2 mb-3'>
+                            <div className='d-flex justify-content-between mb-3'>
+                                <h6 className='mb-0'>Slot 7</h6>
+                                <p className='mb-0'>12/2/2023</p>
+                            </div>
+                            
+                        </div>
 
                     </div>
                 </div>

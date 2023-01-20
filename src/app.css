@@ -1,0 +1,42 @@
+.mainPage {
+    background: rgba(196, 209, 242, 0.488);
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.mainPage .mainpagesubdiv {
+    height: 100%;
+    width: 100%;
+}
+
+.mainPage .planned-list-div {
+    background: rgb(7, 42, 146);
+    color: white;
+    padding: 1rem;
+    width: 30%;
+    border-radius: 10px;
+    overflow-y: auto;
+}
+
+.mainPage .planned-list-div .planned-item {
+    background: rgba(196, 209, 242, 0.264);
+    border-radius: 5px;
+}
+
+.mainPage .planned-list-div::-webkit-scrollbar {
+    width: 10px;
+}
+
+.mainPage .planned-list-div::-webkit-scrollbar-track {
+    background: rgba(196, 209, 242, 0.829);
+}
+
+.mainPage .planned-list-div::-webkit-scrollbar-thumb {
+    background: darkblue;
+    border-radius: 5px;
+}
+
+.mainPage .planned-list-div::-webkit-scrollbar-thumb:hover {
+    background: darkblue;
+}
