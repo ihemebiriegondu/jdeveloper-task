@@ -57,6 +57,8 @@ const Mainpage = () => {
 
         //console.log(userId)
 
+        let updatedCategories = []
+
         let merged = []
         let categories = customerInfo.filter((user) => {
             if (user.id === userId) {
@@ -82,12 +84,21 @@ const Mainpage = () => {
                 user.name = newMerged.name
             }
 
+            if (user.id === userId) {
+                //console.log(user)
+                //console.log(customerInfo.indexOf(user))
+                updatedCategories = customerInfo.filter((newuser) => {
+                    return newuser !== user
+                })
+            }
+
             return user;
         })
 
 
         console.log(categories)
-        setCustomerInfo(categories)
+        //console.log(updatedCategories)
+        setCustomerInfo(updatedCategories)
     }
 
     return (
