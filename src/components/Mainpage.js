@@ -1,22 +1,66 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { storage } from '../firebase';
+import { collection, onSnapshot, addDoc, deleteDoc, doc, query, orderBy, updateDoc } from 'firebase/firestore'
+
 import '../app.css'
 
 const Mainpage = () => {
 
-    const [customerInfo, setCustomerInfo] = useState([
-        { name: 'Ego', id: '1', category: 'unplanned', slotNo: '' },
-        { name: 'Ugo', id: '2', category: 'unplanned', slotNo: '' },
-        { name: 'Chinwendu', id: '3', category: 'unplanned', slotNo: '' },
+    const [customerInfo, setCustomerInfo] = useState([])
+
+    useEffect(() => {
+
+        //getting all stored data
+        const customerList = collection(storage, 'customers-info');
+        const plannerList = collection(storage, "planner");
+
+        //getting query, for ordering
+        const qCustomer = query(customerList, orderBy('Name', 'asc'))
+        const qPlanner = query(plannerList, orderBy('slotNo', 'asc'))
+
+        let allDbInformations = []
+
+        let getDbValue = () => {
+            onSnapshot(qCustomer, (customer) => {
+                let customers = []
+                customer.docs.forEach((doc) => {
+                    customers.push({ ...doc.data(), id: doc.id })
+                })
+
+                customers.forEach(customer => {
+                    allDbInformations.push(customer)
+                })
+                //allDbInformations.push(...customers)
+            })
+
+            onSnapshot(qPlanner, (plan) => {
+                let planner = []
+                plan.docs.forEach((doc) => {
+                    planner.push({ ...doc.data(), id: doc.id })
+                })
+
+                planner.forEach(plan => {
+                    allDbInformations.push(plan)
+                })
+                //allDbInformations.push(...planner)
+            })
+
+            console.log(allDbInformations)
+            return allDbInformations
+            
+        }
 
 
-        { name: 'Jezi', id: '1.1', category: 'planned', slotNo: '1', slotDate: '12/2/2023' },
-        { name: '', id: '1.2', category: 'planned', slotNo: '2', slotDate: '13/2/2023' },
-        { name: '', id: '1.3', category: 'planned', slotNo: '3', slotDate: '14/2/2023' },
-        { name: '', id: '1.4', category: 'planned', slotNo: '4', slotDate: '15/2/2023' },
-        { name: '', id: '1.5', category: 'planned', slotNo: '5', slotDate: '16/2/2023' },
-        { name: '', id: '1.6', category: 'planned', slotNo: '6', slotDate: '17/2/2023' },
-        { name: '', id: '1.7', category: 'planned', slotNo: '7', slotDate: '18/2/2023' }
-    ])
+        return () => {
+            getDbValue()
+        }
+
+    }, [setCustomerInfo(allDbInformations)])
+
+
+
+
+
 
     //creating an object that contains all categories array
     //to store each customer value when dragged
