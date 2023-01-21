@@ -4,10 +4,18 @@ import '../app.css'
 const Mainpage = () => {
 
     const [customerInfo, setCustomerInfo] = useState([
-        { name: 'Ego', id: '1', category: 'unplanned' },
-        { name: 'Ugo', id: '2', category: 'unplanned' },
-        { name: 'Chinwendu', id: '3', category: 'unplanned' },
-        { name: 'Jezi', id: '4', category: 'planned' }
+        { name: 'Ego', id: '1', category: 'unplanned', slotNo: '' },
+        { name: 'Ugo', id: '2', category: 'unplanned', slotNo: '' },
+        { name: 'Chinwendu', id: '3', category: 'unplanned', slotNo: '' },
+
+
+        { name: 'Jezi', id: '1.1', category: 'planned', slotNo: '1', slotDate: '12/2/2023' },
+        { name: '', id: '1.2', category: 'planned', slotNo: '2', slotDate: '13/2/2023' },
+        { name: '', id: '1.3', category: 'planned', slotNo: '3', slotDate: '14/2/2023' },
+        { name: '', id: '1.4', category: 'planned', slotNo: '4', slotDate: '15/2/2023' },
+        { name: '', id: '1.5', category: 'planned', slotNo: '5', slotDate: '16/2/2023' },
+        { name: '', id: '1.6', category: 'planned', slotNo: '6', slotDate: '17/2/2023' },
+        { name: '', id: '1.7', category: 'planned', slotNo: '7', slotDate: '18/2/2023' }
     ])
 
     //creating an object that contains all categories array
@@ -20,16 +28,17 @@ const Mainpage = () => {
     //checking through the customerinfo array for all datas, and grouping each data based on their categories
     customerInfo.forEach((info) => {
         customerCategories[info.category].push(
-            { name: info.name, id: info.id }
+            { name: info.name, id: info.id, slotNo: info.slotNo, slotDate: info.slotDate }
         )
     })
     //console.log(customerInfo)
     //console.log(customerCategories)
 
 
-    const onDragStart = (e, id) => {
+    const onDragStart = (e, id, no) => {
         //console.log(id)
         //console.log("drag start")
+        //console.log(no)
         e.dataTransfer.setData('text/plain', id)
     }
 
@@ -38,23 +47,46 @@ const Mainpage = () => {
         //console.log("drag over")
     }
 
-    const onDrop = (e, cate) => {
+    const onDrop = (e, cate, no, id) => {
         //console.log("dropped")
         e.preventDefault();
 
         //console.log(cate)
         let userId = e.dataTransfer.getData('text')
+        let destinationId = id
 
         //console.log(userId)
 
-        let categories = customerInfo.filter((userCategory) => {
-            if (userCategory.id === userId) {
-                userCategory.category = cate;
+        let merged = []
+        let categories = customerInfo.filter((user) => {
+            if (user.id === userId) {
+                //console.log(destinationId)
+                //user.id = destinationId
+                user.category = cate;
+                user.slotNo = no;
+                //console.log(user)
             }
-            return userCategory;
+
+            if (user.slotNo === no) {
+                //console.log(user)
+                merged.push(user)
+                //console.log(merged)
+            }
+            let newMerged = { ...merged[1], ...merged[0] }
+            //console.log(newMerged)
+
+            if (user.id === destinationId) {
+                //console.log(user)
+
+                //update all info of the customer to the planner
+                user.name = newMerged.name
+            }
+
+            return user;
         })
 
-        //console.log(categories)
+
+        console.log(categories)
         setCustomerInfo(categories)
     }
 
@@ -75,7 +107,7 @@ const Mainpage = () => {
                         <tbody>
                             {
                                 customerCategories.unplanned.map((category) =>
-                                    <tr key={category.id} onDragStart={(e) => onDragStart(e, category.id)} onDragOver={(e) => onDragOver(e)} onDrop={(e) => onDrop(e, "unplanned")} draggable='true'>
+                                    <tr key={category.id} onDragStart={(e) => onDragStart(e, category.id, category.slotNo)} onDragOver={(e) => onDragOver(e)} onDrop={(e) => onDrop(e, "unplanned")} draggable='true'>
                                         <td className='px-4'>{category.name}</td>
                                         <td className='px-4'>{category.id}</td>
                                     </tr>
@@ -96,65 +128,17 @@ const Mainpage = () => {
 
                         {
                             customerCategories.planned.map((category) =>
-                                <div className='planned-item py-3 px-2 mb-3' onDragOver={(e) => onDragOver(e)} onDrop={(e) => onDrop(e, "planned")} droppable='true'>
+                                <div key={category.id} className='planned-item py-3 px-2 mb-3' onDragOver={(e) => onDragOver(e)} onDrop={(e) => onDrop(e, "planned", category.slotNo, category.id)} droppable='true'>
                                     <div className='d-flex justify-content-between mb-3'>
-                                        <h6 className='mb-0'>Slot 1</h6>
-                                        <p className='mb-0'>12/2/2023</p>
+                                        <h6 className='mb-0'>Slot {category.slotNo}</h6>
+                                        <p className='mb-0'>{category.slotDate}</p>
                                     </div>
-                                    <div key={category.id}>
+                                    <div className='bg-light py-2 px-1 text-black' key={category.id}>
                                         <h6>{category.name}</h6>
                                     </div>
                                 </div>
                             )
                         }
-                        <div className='planned-item py-3 px-2 mb-3'>
-                            <div className='d-flex justify-content-between mb-3'>
-                                <h6 className='mb-0'>Slot 2</h6>
-                                <p className='mb-0'>12/2/2023</p>
-                            </div>
-                            
-                        </div>
-
-                        <div className='planned-item py-3 px-2 mb-3'>
-                            <div className='d-flex justify-content-between mb-3'>
-                                <h6 className='mb-0'>Slot 3</h6>
-                                <p className='mb-0'>12/2/2023</p>
-                            </div>
-                            
-                        </div>
-
-                        <div className='planned-item py-3 px-2 mb-3'>
-                            <div className='d-flex justify-content-between mb-3'>
-                                <h6 className='mb-0'>Slot 4</h6>
-                                <p className='mb-0'>12/2/2023</p>
-                            </div>
-                            
-                        </div>
-
-                        <div className='planned-item py-3 px-2 mb-3'>
-                            <div className='d-flex justify-content-between mb-3'>
-                                <h6 className='mb-0'>Slot 5</h6>
-                                <p className='mb-0'>12/2/2023</p>
-                            </div>
-                            
-                        </div>
-
-                        <div className='planned-item py-3 px-2 mb-3'>
-                            <div className='d-flex justify-content-between mb-3'>
-                                <h6 className='mb-0'>Slot 6</h6>
-                                <p className='mb-0'>12/2/2023</p>
-                            </div>
-                            
-                        </div>
-
-                        <div className='planned-item py-3 px-2 mb-3'>
-                            <div className='d-flex justify-content-between mb-3'>
-                                <h6 className='mb-0'>Slot 7</h6>
-                                <p className='mb-0'>12/2/2023</p>
-                            </div>
-                            
-                        </div>
-
                     </div>
                 </div>
             </div>
