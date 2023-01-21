@@ -87,6 +87,8 @@ const Mainpage = () => {
             if (user.id === userId) {
                 //console.log(user)
                 //console.log(customerInfo.indexOf(user))
+
+                //function to delete customer info repeatition
                 updatedCategories = customerInfo.filter((newuser) => {
                     return newuser !== user
                 })
