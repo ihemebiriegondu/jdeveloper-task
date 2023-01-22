@@ -152,6 +152,33 @@ const Mainpage = () => {
         setCustomerInfo(updatedCategories)
     }
 
+    const resetPlanner = (e) => {
+
+        //console.log(customerInfo)
+        customerInfo.forEach(customer => {
+            if (customer.category === "planned") {
+                //console.log(customer)
+                let docID = customer.id
+                //console.log(docID)
+
+                const resetplanner = doc(storage, "planner", docID);
+                //console.log(planner)
+                updateDoc(resetplanner, {
+                    Name: '',
+                    DropOff: '',
+                    PickUp: ''
+                })
+                    .then(() => {
+                        console.log('done')
+                    }).catch((err) => {
+                        console.log(err)
+                    })
+            }
+        })
+        //alert('Deleted')
+    }
+
+
     return (
         <div className='mainPage'>
             <div className='d-flex justify-content-between mainpagesubdiv py-5 px-4'>
@@ -169,8 +196,8 @@ const Mainpage = () => {
                         <tbody>
                             {
                                 customerCategories.unplanned.map((category) =>
-                                    <tr key={category.id} onDragStart={(e) => onDragStart(e, category.customerID, category.slotNo)} onDragOver={(e) => onDragOver(e)} onDrop={(e) => onDrop(e, "unplanned")} draggable='true'>
-                                        <td className='px-4'>{category.Name}</td>
+                                    <tr className='uplanned-content' key={category.id} onDragStart={(e) => onDragStart(e, category.customerID, category.slotNo)} onDragOver={(e) => onDragOver(e)} onDrop={(e) => onDrop(e, "unplanned")} draggable='true'>
+                                        <td className='px-4 py-1'>{category.Name}</td>
                                         <td className='px-4'>{category.customerID}</td>
                                         <td className='px-4'>{category.PickUp}</td>
                                         <td className='px-4'>{category.DropOff}</td>
@@ -205,6 +232,9 @@ const Mainpage = () => {
                         }
                     </div>
                 </div>
+            </div>
+            <div className='btn-div pb-5 mx-auto d-flex justify-content-center'>
+                <button className='py-2 mx-auto' onClick={(e) => { resetPlanner(e) }}>Reset Planner</button>
             </div>
         </div>
     )

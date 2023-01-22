@@ -40,3 +40,27 @@
 .mainPage .planned-list-div::-webkit-scrollbar-thumb:hover {
     background: darkblue;
 }
+
+.uplanned-content {
+    margin-bottom: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+.uplanned-content:hover {
+    cursor: grab !important;
+}
+
+.btn-div {
+    background-color: rgba(196, 209, 242, 0.488);
+    width: 100%;
+    align-content: center;
+}
+
+.btn-div button {
+    background: rgb(7, 42, 146);
+    color: white;
+    width: 40%;
+    border: none;
+    border-radius: 5px;
+    align-items: center;
+}
