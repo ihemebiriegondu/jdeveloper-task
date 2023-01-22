@@ -3,10 +3,11 @@
     position: absolute;
     height: 100%;
     width: 100%;
+    overflow-x: auto;
 }
 
 .mainPage .mainpagesubdiv {
-    height: 100%;
+    height: fit-content;
     width: 100%;
 }
 
@@ -63,4 +64,16 @@
     border: none;
     border-radius: 5px;
     align-items: center;
+}
+
+@media (max-width: 992px) {
+    .mainPage .planned-list-div {
+        width: 40%;
+    }
+}
+
+@media (max-width: 768px) {
+    .mainPage .planned-list-div {
+        width: 100%;
+    }
 }

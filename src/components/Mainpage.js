@@ -181,7 +181,7 @@ const Mainpage = () => {
 
     return (
         <div className='mainPage'>
-            <div className='d-flex justify-content-between mainpagesubdiv py-5 px-4'>
+            <div className='d-flex flex-column flex-md-row justify-content-between mainpagesubdiv py-5 px-4'>
                 <div className='unplanned-list-div'>
                     <h4 className='ps-5 mb-3'>Customers list</h4>
                     <table onDrop={(e) => onDrop(e, "unplanned")}>
@@ -213,7 +213,7 @@ const Mainpage = () => {
                 </div>
 
 
-                <div className='planned-list-div'>
+                <div className='planned-list-div mt-5 mt-md-0'>
                     <h4 className='text-center mb-4'>Delivery planner</h4>
                     <div>
 
