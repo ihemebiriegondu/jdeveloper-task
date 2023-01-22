@@ -1,66 +1,50 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { storage } from '../firebase';
-import { collection, onSnapshot, addDoc, deleteDoc, doc, query, orderBy, updateDoc } from 'firebase/firestore'
+import { collection, onSnapshot, doc, query, orderBy, updateDoc } from 'firebase/firestore'
 
 import '../app.css'
 
 const Mainpage = () => {
 
+    //getting all stored data
+    const customerList = collection(storage, 'customers-info');
+    const plannerList = collection(storage, "planner");
+
+    //getting query, for ordering
+    const qCustomer = query(customerList, orderBy('Name', 'asc'))
+    const qPlanner = query(plannerList, orderBy('slotNo', 'asc'))
+
     const [customerInfo, setCustomerInfo] = useState([])
 
-    useEffect(() => {
+    let allDbInformations = []
 
-        //getting all stored data
-        const customerList = collection(storage, 'customers-info');
-        const plannerList = collection(storage, "planner");
+    onSnapshot(qCustomer, (customer) => {
+        let customers = []
+        customer.docs.forEach((doc) => {
+            customers.push({ ...doc.data(), id: doc.id })
+        })
 
-        //getting query, for ordering
-        const qCustomer = query(customerList, orderBy('Name', 'asc'))
-        const qPlanner = query(plannerList, orderBy('slotNo', 'asc'))
+        customers.forEach(customer => {
+            allDbInformations.push(customer)
+        })
+        //allDbInformations.push(...customers)
+        setCustomerInfo(allDbInformations)
+    })
 
-        let allDbInformations = []
+    onSnapshot(qPlanner, (plan) => {
+        let planner = []
+        plan.docs.forEach((doc) => {
+            planner.push({ ...doc.data(), id: doc.id })
+        })
 
-        let getDbValue = () => {
-            onSnapshot(qCustomer, (customer) => {
-                let customers = []
-                customer.docs.forEach((doc) => {
-                    customers.push({ ...doc.data(), id: doc.id })
-                })
+        planner.forEach(plan => {
+            allDbInformations.push(plan)
+        })
+        //allDbInformations.push(...planner)
+        setCustomerInfo(allDbInformations)
+    })
 
-                customers.forEach(customer => {
-                    allDbInformations.push(customer)
-                })
-                //allDbInformations.push(...customers)
-            })
-
-            onSnapshot(qPlanner, (plan) => {
-                let planner = []
-                plan.docs.forEach((doc) => {
-                    planner.push({ ...doc.data(), id: doc.id })
-                })
-
-                planner.forEach(plan => {
-                    allDbInformations.push(plan)
-                })
-                //allDbInformations.push(...planner)
-            })
-
-            console.log(allDbInformations)
-            return allDbInformations
-            
-        }
-
-
-        return () => {
-            getDbValue()
-        }
-
-    }, [setCustomerInfo(allDbInformations)])
-
-
-
-
-
+    //console.log(allDbInformations)
 
     //creating an object that contains all categories array
     //to store each customer value when dragged
@@ -72,7 +56,7 @@ const Mainpage = () => {
     //checking through the customerinfo array for all datas, and grouping each data based on their categories
     customerInfo.forEach((info) => {
         customerCategories[info.category].push(
-            { name: info.name, id: info.id, slotNo: info.slotNo, slotDate: info.slotDate }
+            { Name: info.Name, id: info.id, customerID: info.customerID, slotNo: info.slotNo, slotDate: info.slotDate, DropOff: info.DropOff, PickUp: info.PickUp }
         )
     })
     //console.log(customerInfo)
@@ -91,7 +75,8 @@ const Mainpage = () => {
         //console.log("drag over")
     }
 
-    const onDrop = (e, cate, no, id) => {
+    const onDrop = (e, cate, no, id, firebaseID) => {
+        //console.log(customerInfo)
         //console.log("dropped")
         e.preventDefault();
 
@@ -105,7 +90,8 @@ const Mainpage = () => {
 
         let merged = []
         let categories = customerInfo.filter((user) => {
-            if (user.id === userId) {
+            //console.log(user)
+            if (user.customerID === userId) {
                 //console.log(destinationId)
                 //user.id = destinationId
                 user.category = cate;
@@ -121,14 +107,33 @@ const Mainpage = () => {
             let newMerged = { ...merged[1], ...merged[0] }
             //console.log(newMerged)
 
-            if (user.id === destinationId) {
+            if (user.customerID === destinationId) {
                 //console.log(user)
 
                 //update all info of the customer to the planner
-                user.name = newMerged.name
+                user.Name = newMerged.Name
+                user.DropOff = newMerged.DropOff
+                user.PickUp = newMerged.PickUp
+
+                let docId = firebaseID;
+                //console.log(docId)
+
+                const newplanner = doc(storage, "planner", docId);
+                //console.log(planner)
+                updateDoc(newplanner, {
+                    Name: user.Name,
+                    DropOff: user.DropOff,
+                    PickUp: user.PickUp
+                })
+                    .then(() => {
+                        console.log('done')
+                    }).catch((err) => {
+                        console.log(err)
+                    })
+                //console.log(user)
             }
 
-            if (user.id === userId) {
+            if (user.customerID === userId) {
                 //console.log(user)
                 //console.log(customerInfo.indexOf(user))
 
@@ -164,9 +169,11 @@ const Mainpage = () => {
                         <tbody>
                             {
                                 customerCategories.unplanned.map((category) =>
-                                    <tr key={category.id} onDragStart={(e) => onDragStart(e, category.id, category.slotNo)} onDragOver={(e) => onDragOver(e)} onDrop={(e) => onDrop(e, "unplanned")} draggable='true'>
-                                        <td className='px-4'>{category.name}</td>
-                                        <td className='px-4'>{category.id}</td>
+                                    <tr key={category.id} onDragStart={(e) => onDragStart(e, category.customerID, category.slotNo)} onDragOver={(e) => onDragOver(e)} onDrop={(e) => onDrop(e, "unplanned")} draggable='true'>
+                                        <td className='px-4'>{category.Name}</td>
+                                        <td className='px-4'>{category.customerID}</td>
+                                        <td className='px-4'>{category.PickUp}</td>
+                                        <td className='px-4'>{category.DropOff}</td>
                                     </tr>
                                 )
                             }
@@ -185,13 +192,13 @@ const Mainpage = () => {
 
                         {
                             customerCategories.planned.map((category) =>
-                                <div key={category.id} className='planned-item py-3 px-2 mb-3' onDragOver={(e) => onDragOver(e)} onDrop={(e) => onDrop(e, "planned", category.slotNo, category.id)} droppable='true'>
+                                <div key={category.id} className='planned-item py-3 px-2 mb-3' onDragOver={(e) => onDragOver(e)} onDrop={(e) => onDrop(e, "planned", category.slotNo, category.customerID, category.id)} droppable='true'>
                                     <div className='d-flex justify-content-between mb-3'>
                                         <h6 className='mb-0'>Slot {category.slotNo}</h6>
                                         <p className='mb-0'>{category.slotDate}</p>
                                     </div>
                                     <div className='bg-light py-2 px-1 text-black' key={category.id}>
-                                        <h6>{category.name}</h6>
+                                        <h6>{category.Name}</h6>
                                     </div>
                                 </div>
                             )
